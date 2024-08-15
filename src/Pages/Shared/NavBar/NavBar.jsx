@@ -1,14 +1,19 @@
-import { Link, NavLink } from 'react-router-dom';
-import  userImage from '../../../assets/image/user.png'
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import userImage from "../../../assets/image/user.png";
+import useAuth from "../../../hooks/useAuth";
 const NavBar = () => {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = () => {
+    signOut();
+    navigate("/");
+  };
+
   const navOptions = (
     <>
       <li>
-        <NavLink to='/products'>Products</NavLink>
-      </li>
-
-      <li>
-        <a>Item 3</a>
+        <NavLink to="/products">Products</NavLink>
       </li>
     </>
   );
@@ -40,7 +45,9 @@ const NavBar = () => {
             {navOptions}
           </ul>
         </div>
-        <Link to='/' className="btn btn-ghost text-xl">Quick Cart</Link>
+        <Link to="/" className="btn btn-ghost text-xl">
+          Quick Cart
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{navOptions}</ul>
@@ -48,23 +55,45 @@ const NavBar = () => {
       <div className="navbar-end">
         {/* Profile DropDown */}
         <div className="dropdown dropdown-end">
-          <div tabIndex={0} role="button" className="btn m-1">
+          {user ? (
+            <>
+              <div tabIndex={0} role="button" className="btn m-1">
+                User
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <div onClick={handleSignOut}>
+                    <a>Sign Out</a>
+                  </div>
+                </li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <div tabIndex={0} role="button" className="btn m-1">
+                <Link to="login">Log In</Link>
+              </div>
+            </>
+          )}
+
+          {/* <div tabIndex={0} role="button" className="btn m-1">
             User
           </div>
           <ul
             tabIndex={0}
             className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
           >
+            
             <li>
-              <a href='/'>Dashboard</a>
-            </li>
-            <li>
-              <a href='login'>Login</a>
+              <a href="login">Login</a>
             </li>
             <li>
               <a>Sign Out</a>
             </li>
-          </ul>
+          </ul> */}
         </div>
       </div>
     </div>
