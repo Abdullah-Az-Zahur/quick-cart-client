@@ -5,6 +5,8 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [count, setCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterCategory, setFilterCategory] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
@@ -14,16 +16,51 @@ const Products = () => {
   // axios Fetcher implementation
   useEffect(() => {
     const getProducts = async () => {
-      const { data } = await axios(`${import.meta.env.VITE_API_URL}/products`);
+      const { data } = await axios(
+        `${
+          import.meta.env.VITE_API_URL
+        }/products?page=${currentPage}&search=${search}&size=${itemsPerPage}&filterCategory=${filterCategory}&filterBrand=${filterBrand}`
+      );
       setProducts(data);
     };
-    console.log(filterBrand, filterCategory);
+    console.log(filterCategory, filterBrand, searchText, search);
+
     getProducts();
-  }, [filterCategory, filterBrand]);
+  }, [
+    filterCategory,
+    currentPage,
+    search,
+    itemsPerPage,
+    searchText,
+    filterBrand,
+  ]);
+
+  useEffect(() => {
+    const getCount = async () => {
+      const { data } = await axios(
+        `${
+          import.meta.env.VITE_API_URL
+        }/productCount?search=${search}&filterCategory=${filterCategory}&filterBrand=${filterBrand}`
+      );
+      setCount(data.count);
+    };
+    console.log("Count", count);
+    getCount();
+  }, [search, filterCategory, filterBrand, count]);
+
+  const numberOfPages = Math.ceil(count / itemsPerPage);
+  const pages = [...Array(numberOfPages).keys()].map((element) => element + 1);
+
+  // handle pagination button
+  const handlePageChange = (pageNumber) => {
+    console.log(pageNumber);
+    setCurrentPage(pageNumber);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
     setSearch(searchText);
+    console.log(products);
   };
 
   const handleReset = () => {
@@ -35,9 +72,9 @@ const Products = () => {
 
   return (
     <div className="container px-6 py-10 mx-auto  flex flex-col justify-between">
-      {/* search , filter , sort */}
+      {/* search , filterCategory , sort */}
       <div className="flex flex-col md:flex-row justify-center items-center gap-5 my-8">
-        {/* filter by Category */}
+        {/* filterCategory by Category */}
         <div>
           <select
             onChange={(e) => {
@@ -49,18 +86,15 @@ const Products = () => {
             id="category"
             className="border p-4 rounded-lg"
           >
-            <option value="">Filter By Category</option>
-            <option value="ArtMaster">ArtMaster</option>
+            <option value="">filterCategory By Category</option>
+            <option value="Art Supplies">Art Supplies</option>
             <option value="Real Estate">Real Estate</option>
-            <option value="Food & Beverages">Food & Beverages</option>
+            <option value="Food and Beverages">Food and Beverages</option>
             <option value="Electronics">Electronics</option>
-            <option value="Fitness & Wellness">Fitness & Wellness</option>
-            <option value="Transportation">Transportation</option>
-            <option value="Home & Office">Home & Office</option>
           </select>
         </div>
 
-        {/* filter by Brand */}
+        {/* filterCategory by Brand */}
 
         <div>
           <select
@@ -69,16 +103,15 @@ const Products = () => {
               setCurrentPage(1);
             }}
             value={filterBrand}
-            name="category"
-            id="category"
+            name="brand"
+            id="brand"
             className="border p-4 rounded-lg"
           >
-            <option value="">Filter By Brand</option>
+            <option value="">filterCategory By Brand</option>
             <option value="ArtMaster">ArtMaster</option>
             <option value="Coastal Retreats">Coastal Retreats</option>
             <option value="Gourmet Kitchen">Gourmet Kitchen</option>
-            <option value="TechTime">TechTime</option>
-            <option value="EcoRide">EcoRide</option>
+            <option value="TechGuru">TechGuru</option>
           </select>
         </div>
 
@@ -105,7 +138,9 @@ const Products = () => {
 
         {/* reset button */}
         <div>
-          <button className="btn" onClick={handleReset}>Reset</button>
+          <button className="btn" onClick={handleReset}>
+            Reset
+          </button>
         </div>
       </div>
 
@@ -114,6 +149,43 @@ const Products = () => {
         {products.map((product) => (
           <ProductCard key={product._id} product={product}></ProductCard>
         ))}
+      </div>
+
+      {/* pagination */}
+      <div className="flex justify-center mt-12">
+        {/* pagination button */}
+        {/* previous button */}
+        <button
+          className="btn"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        {/* page number */}
+        <div>
+          {pages.map((btnNum) => (
+            <button
+              onClick={() => handlePageChange(btnNum)}
+              key={btnNum}
+              className={`hidden ${
+                currentPage === btnNum ? "bg-blue-500 text-white" : ""
+              } px-4 py-2 mx-1 transition-colors duration-300 transform  rounded-md sm:inline hover:bg-blue-500  hover:text-white`}
+            >
+              {btnNum}
+            </button>
+          ))}
+        </div>
+        {/* next buttons */}
+        <div>
+          <button
+            className="btn"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === Math.ceil(count / itemsPerPage)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

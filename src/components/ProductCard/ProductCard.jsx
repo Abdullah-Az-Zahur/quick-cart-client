@@ -4,16 +4,16 @@ import { Rating } from '@smastrom/react-rating'
 import '@smastrom/react-rating/style.css'
 
 const ProductCard = ({ product }) => {
-  const { productName, productImage, description, price, rating, brandName } =
+  const { title, image, description, price, rating, brandName } =
     product;
   return (
     <div className="card bg-base-100 w-auto shadow-xl">
       <figure>
-        <img src={productImage} alt="Shoes" />
+        <img src={image} alt="Shoes" />
       </figure>
       <div className="card-body">
         <div className="flex  gap-10">
-          <h2 className="card-title ">{productName}</h2>
+          <h2 className="card-title ">{title}</h2>
           <p className="text-center my-auto right-0">${price}</p>
         </div>
         <p>{description}</p>
