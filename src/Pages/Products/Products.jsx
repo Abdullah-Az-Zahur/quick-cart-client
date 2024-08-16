@@ -8,16 +8,8 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterCategory, setFilterCategory] = useState("");
   const [filterBrand, setFilterBrand] = useState("");
-
-  //   basic Fetcher implementation
-  //   useEffect(() => {
-  //     fetch("http://localhost:5000/products")
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         setProducts(data);
-  //         setLoading(false);
-  //       });
-  //   }, []);
+  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
 
   // axios Fetcher implementation
   useEffect(() => {
@@ -25,9 +17,21 @@ const Products = () => {
       const { data } = await axios(`${import.meta.env.VITE_API_URL}/products`);
       setProducts(data);
     };
-    console.log(filterBrand, filterCategory)
+    console.log(filterBrand, filterCategory);
     getProducts();
   }, [filterCategory, filterBrand]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(searchText);
+  };
+
+  const handleReset = () => {
+    setFilterCategory("");
+    setFilterBrand("");
+    setSearchText("");
+    setSearch("");
+  };
 
   return (
     <div className="container px-6 py-10 mx-auto  flex flex-col justify-between">
@@ -76,6 +80,32 @@ const Products = () => {
             <option value="TechTime">TechTime</option>
             <option value="EcoRide">EcoRide</option>
           </select>
+        </div>
+
+        {/* Search Field */}
+        <>
+          <form onSubmit={handleSearch}>
+            <div className="flex p-1 overflow-hidden border rounded-lg    focus-within:ring focus-within:ring-opacity-40 focus-within:border-blue-400 focus-within:ring-blue-300">
+              <input
+                className="px-6 py-2 text-gray-700 placeholder-gray-500 bg-white outline-none focus:placeholder-transparent"
+                type="text"
+                onChange={(event) => setSearchText(event.target.value)}
+                value={searchText}
+                placeholder="Enter Product Name"
+              />
+              <button>Search</button>
+            </div>
+          </form>
+        </>
+
+        {/* Price range */}
+        <div>
+          <h2>to do</h2>
+        </div>
+
+        {/* reset button */}
+        <div>
+          <button className="btn" onClick={handleReset}>Reset</button>
         </div>
       </div>
 
