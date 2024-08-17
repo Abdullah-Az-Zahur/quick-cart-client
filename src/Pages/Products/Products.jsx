@@ -12,6 +12,7 @@ const Products = () => {
   const [filterBrand, setFilterBrand] = useState("");
   const [searchText, setSearchText] = useState("");
   const [search, setSearch] = useState("");
+  const [sortPrice, setSortPrice] = useState("");
 
   // axios Fetcher implementation
   useEffect(() => {
@@ -19,7 +20,7 @@ const Products = () => {
       const { data } = await axios(
         `${
           import.meta.env.VITE_API_URL
-        }/products?page=${currentPage}&search=${search}&size=${itemsPerPage}&filterCategory=${filterCategory}&filterBrand=${filterBrand}`
+        }/products?page=${currentPage}&search=${search}&size=${itemsPerPage}&filterCategory=${filterCategory}&filterBrand=${filterBrand}&sortPrice=${sortPrice}`
       );
       setProducts(data);
     };
@@ -33,6 +34,7 @@ const Products = () => {
     itemsPerPage,
     searchText,
     filterBrand,
+    sortPrice,
   ]);
 
   useEffect(() => {
@@ -68,6 +70,7 @@ const Products = () => {
     setFilterBrand("");
     setSearchText("");
     setSearch("");
+    setSortPrice("");
   };
 
   return (
@@ -131,9 +134,22 @@ const Products = () => {
           </form>
         </>
 
-        {/* Price range */}
+        {/* Price short */}
         <div>
-          <h2>to do</h2>
+          <select
+            onChange={(e) => {
+              setSortPrice(e.target.value);
+              setCurrentPage(1);
+            }}
+            value={sortPrice}
+            name="sortPrice"
+            id="sortPrice"
+            className="border p-4 rounded-md"
+          >
+            <option value="">Sort By Price</option>
+            <option value="dsc">High to Low</option>
+            <option value="asc">Low to High</option>
+          </select>
         </div>
 
         {/* reset button */}
